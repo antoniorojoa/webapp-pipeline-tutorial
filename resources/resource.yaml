@@ -1,0 +1,35 @@
+---
+# This resource is the location of the git repo with the web application source
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: web-application-repo
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/nodeshift-starters/react-pipeline-example
+    - name: revision
+      value: master
+---
+# This resource is the result of running "npm run build",  the resulting built files will be located in /opt/app-root/output
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: built-web-application-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: image-registry.openshift-image-registry.svc:5000/webapp-pipeline/built-web-application:latest
+---
+# This resource is the image that will be just the static html, css, js files being run with nginx
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: runtime-web-application-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: image-registry.openshift-image-registry.svc:5000/webapp-pipeline/runtime-web-application:latest
