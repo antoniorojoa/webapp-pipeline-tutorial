@@ -1,0 +1,66 @@
+apiVersion: tekton.dev/v1alpha1
+kind: ClusterTask
+metadata:
+  name: webapp-build-runtime
+spec:
+  inputs:
+    resources:
+    - name: image
+      type: image
+    params:
+    - name: SOURCE_PATH
+      description: The location of the built webapp
+      default: /opt/app-root/output
+    - name: WEB_RUNTIME_IMAGE
+      description: The Web Runtime image to use,  defaults to centos/nginx-114-centos7
+      default: centos/nginx-114-centos7
+    - name: TLSVERIFY
+      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+      default: "false"
+  outputs:
+    resources:
+    - name: image
+      type: image
+  steps:
+  - name: copy-source
+    image: $(inputs.resources.image.url)
+    workingdir: $(inputs.params.SOURCE_PATH)
+    command: ['cp', '-Rvp', '$(inputs.params.SOURCE_PATH)', '/gen-source/build']
+    volumeMounts:
+    - name: gen-source
+      mountPath: /gen-source
+  - name: generate
+    image: quay.io/openshift-pipeline/s2i
+    workingdir: /workspace/source
+    command: ['s2i', 'build', '/gen-source/build', '$(inputs.params.WEB_RUNTIME_IMAGE)', '--as-dockerfile', '/gen-source/Dockerfile.gen']
+    volumeMounts:
+    - name: gen-source
+      mountPath: /gen-source
+    securityContext:
+      privileged: true
+  - name: build
+    image: quay.io/buildah/stable
+    workingdir: /gen-source
+    command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '/gen-source/Dockerfile.gen', '-t', '$(outputs.resources.image.url)', '.']
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+    - name: gen-source
+      mountPath: /gen-source
+    securityContext:
+      privileged: true
+
+  - name: push
+    image: quay.io/buildah/stable
+    command: ['buildah', 'push', '--tls-verify=$(inputs.params.TLSVERIFY)', '$(outputs.resources.image.url)', 'docker://$(outputs.resources.image.url)']
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+
+  volumes:
+  - name: varlibcontainers
+    emptyDir: {}
+  - name: gen-source
+    emptyDir: {}
