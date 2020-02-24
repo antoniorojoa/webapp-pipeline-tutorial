@@ -1,0 +1,68 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-and-deploy-web-applications
+spec:
+  resources:
+    - name: web-application-repo
+      type: git
+    - name: built-web-application-image
+      type: image
+    - name: runtime-web-application-image
+      type: image
+
+  tasks:
+    - name: build-web-application
+      taskRef:
+        name: s2i-web-app
+        kind: ClusterTask
+      resources:
+        inputs:
+          - name: source
+            resource: web-application-repo
+        outputs:
+          - name: image
+            resource: built-web-application-image
+      params:
+        - name: TLSVERIFY
+          value: "false"
+
+    - name: build-runtime-image
+      taskRef:
+        name: webapp-build-runtime
+        kind: ClusterTask
+      resources:
+        inputs:
+          - name: image
+            resource: built-web-application-image
+        outputs:
+          - name: image
+            resource: runtime-web-application-image
+      params:
+        - name: TLSVERIFY
+          value: "false"
+      runAfter:
+        - build-web-application
+
+    - name: apply-web-app-runtime-manifests
+      taskRef:
+        name: apply-manifests
+      resources:
+        inputs:
+          - name: source
+            resource: web-application-repo
+      runAfter:
+        - build-runtime-image
+
+    - name: update-web-app-runitme-image
+      taskRef:
+        name: update-deployment
+      resources:
+        inputs:
+          - name: image
+            resource: runtime-web-application-image
+      params:
+        - name: DEPLOYMENT
+          value: "react-pipeline-example"
+      runAfter:
+        - apply-web-app-runtime-manifests
