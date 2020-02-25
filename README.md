@@ -162,7 +162,7 @@ First, then name:
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: build-and-deploy-web-applications
+  name: build-and-deploy-react
 ```
 
 Then, in the **spec** section, we see specify the resources that we created earler:
@@ -239,7 +239,7 @@ And the last task will update the deployment, with the newly created image.
 To run the pipeline, run the following command:
 
 ```
-$ tkn pipeline start build-and-deploy-web-applications
+$ tkn pipeline start build-and-deploy-react
 ```
 
 The CLI will turn interactive, and you will need to choose the appropriate resources at each prompt.

@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: build-and-deploy-web-applications
+  name: build-and-deploy-react
 spec:
   resources:
     - name: web-application-repo
