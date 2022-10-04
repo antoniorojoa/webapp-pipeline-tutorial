@@ -17,6 +17,7 @@ spec:
     - name: TLSVERIFY
       description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
       default: "false"
+  serviceAccountName: pipeline
   outputs:
     resources:
     - name: image
