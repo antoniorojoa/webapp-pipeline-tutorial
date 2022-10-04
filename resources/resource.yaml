@@ -21,7 +21,7 @@ spec:
   type: image
   params:
     - name: url
-      value: image-registry.openshift-image-registry.svc:5000/webapp-pipeline/built-web-application:latest
+      value: image-registry.openshift-image-registry.svc:5000/webapp-pipeline-ara/built-web-application:latest
 ---
 # This resource is the image that will be just the static html, css, js files being run with nginx
 apiVersion: tekton.dev/v1alpha1
@@ -32,4 +32,4 @@ spec:
   type: image
   params:
     - name: url
-      value: image-registry.openshift-image-registry.svc:5000/webapp-pipeline/runtime-web-application:latest
+      value: image-registry.openshift-image-registry.svc:5000/webapp-pipeline-ara/runtime-web-application:latest
