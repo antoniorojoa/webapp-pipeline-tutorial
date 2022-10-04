@@ -3,6 +3,7 @@ kind: Pipeline
 metadata:
   name: build-and-deploy-react
 spec:
+  serviceAccountName: pipeline
   resources:
     - name: web-application-repo
       type: git
