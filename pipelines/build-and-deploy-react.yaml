@@ -12,6 +12,7 @@ spec:
       type: image
 
   tasks:
+    serviceAccountName: pipeline
     - name: build-web-application
       taskRef:
         name: s2i-web-app
