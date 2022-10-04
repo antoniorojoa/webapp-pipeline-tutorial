@@ -45,8 +45,8 @@ spec:
           mountPath: /var/lib/containers
         - name: gen-source
           mountPath: /gen-source
-      securityContext:
-        privileged: true
+#      securityContext:
+#        privileged: true
     - name: push
       image: quay.io/buildah/stable
       command: ['buildah', 'push', '--tls-verify=$(inputs.params.TLSVERIFY)', '$(outputs.resources.image.url)', 'docker://$(outputs.resources.image.url)']
