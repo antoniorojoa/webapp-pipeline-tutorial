@@ -36,8 +36,8 @@ spec:
     volumeMounts:
     - name: gen-source
       mountPath: /gen-source
-    securityContext:
-      privileged: true
+#    securityContext:
+#      privileged: true
   - name: build
     image: quay.io/buildah/stable
     workingdir: /gen-source
@@ -47,8 +47,8 @@ spec:
       mountPath: /var/lib/containers
     - name: gen-source
       mountPath: /gen-source
-    securityContext:
-      privileged: true
+ #   securityContext:
+ #     privileged: true
 
   - name: push
     image: quay.io/buildah/stable
@@ -56,8 +56,8 @@ spec:
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
-    securityContext:
-      privileged: true
+  #  securityContext:
+  #    privileged: true
 
   volumes:
   - name: varlibcontainers
